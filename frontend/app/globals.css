@@ -1,0 +1,22 @@
+/* globals.css */
+
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100%;
+  width: 100%;
+  /* Не ставимо тут max-width, щоб фон міг бути на весь екран */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Створюємо глобальний клас для обмеження контенту */
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 30px; /* Відступи, щоб на мобільних текст не прилипав до країв */
+  width: 100%;
+}

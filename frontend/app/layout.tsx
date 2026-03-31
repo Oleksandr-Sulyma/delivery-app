@@ -1,4 +1,6 @@
+import React from 'react';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
+import ClientLayout from '../components/ClientLayout'; // імпортуємо нашу нову оболонку
 import "./globals.css";
 
 export const metadata = {
@@ -12,9 +14,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="uk">
       <body>
-        <AntdRegistry>{children}</AntdRegistry>
+        <AntdRegistry>
+          <ClientLayout>
+            {children}
+          </ClientLayout>
+        </AntdRegistry>
       </body>
     </html>
   );
