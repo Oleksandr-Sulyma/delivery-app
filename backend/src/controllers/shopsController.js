@@ -1,4 +1,5 @@
 import { Shop } from '../models/shop.js';
+import { Product } from '../models/product.js';
 import createHttpError from 'http-errors';
 
 export const getAllShops = async (req, res, next) => {
@@ -60,45 +61,41 @@ export const getShopById = async (req, res, next) => {
   }
 };
 
-export const createShop = async (req, res, next) => {
-  try {
-    const shop = await Shop.create(req.body);
-    res.status(201).json(shop);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const deleteShop = async (req, res, next) => {
+export const getProductsByShop = async (req, res, next) => {
   try {
     const { shopId } = req.params;
-    const shop = await Shop.findByIdAndDelete(shopId);
+    const {
+      category,
+      page = 1,
+      perPage = 8,
+      sortBy = 'createdAt',
+      sortOrder = 'asc'
+    } = req.query;
 
-    if (!shop) {
-      return next(createHttpError(404, 'Shop not found'));
-    }
-    res.status(200).json({ message: 'Shop deleted successfully', shop });
-  } catch (error) {
-    next(error);
-  }
-};
+    const filter = { shop: shopId };
+    if (category) filter.category = category;
 
-export const updateShop = async (req, res, next) => {
-  try {
-    const { shopId } = req.params;
-    const shop = await Shop.findByIdAndUpdate(
-      shopId,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const pageNum = Math.max(1, Number(page));
+    const limitNum = Math.max(1, Number(perPage));
+    const skip = (pageNum - 1) * limitNum;
 
-    if (!shop) {
-      return next(createHttpError(404, 'Shop not found'));
-    }
-    res.status(200).json(shop);
+    const [totalItems, products] = await Promise.all([
+      Product.countDocuments(filter),
+      Product.find(filter)
+        .skip(skip)
+        .limit(limitNum)
+        .sort({ [sortBy]: sortOrder === 'asc' ? 1 : -1 })
+    ]);
+
+    res.status(200).json({
+      data: products,
+      page: pageNum,
+      perPage: limitNum,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limitNum),
+      hasNextPage: pageNum * limitNum < totalItems,
+      hasPreviousPage: pageNum > 1
+    });
   } catch (error) {
     next(error);
   }

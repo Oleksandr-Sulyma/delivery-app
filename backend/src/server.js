@@ -4,11 +4,14 @@ import cors from 'cors';
 import helmet from 'helmet';
 import 'dotenv/config';
 
+import { errors } from "celebrate";
 import { connectMongoDB } from './db/connectMongoDB.js';
 import { logger } from './middleware/logger.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import shopsRouter from './routes/shopsRoutes.js';
+import ordersRouter from './routes/ordersRoutes.js';
+import productsRouter from './routes/productsRoutes.js';
 
 dns.setServers(['1.1.1.1']);
 
@@ -16,12 +19,19 @@ const app = express();
 
 app.use(logger);
 app.use(express.json({ limit: '5mb' }));
-app.use(cors({ methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'] }));
+app.use(cors({
+  origin: process.env.FRONTEND_DOMAIN,
+  credentials: true,
+  methods: ['GET', 'POST' ]
+}));
 app.use(helmet());
 
-app.use('/api', shopsRouter);
+app.use('/shops', shopsRouter);
+app.use('/orders', ordersRouter);
+app.use('/products', productsRouter);
 
 app.use(notFoundHandler);
+app.use(errors());
 app.use(errorHandler);
 
 const startApp = async () => {
