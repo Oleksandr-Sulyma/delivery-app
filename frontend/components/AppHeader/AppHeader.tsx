@@ -30,7 +30,6 @@ export default function AppHeader() {
               href={link.href} 
               style={{ 
                 textDecoration: 'none', 
-                // Блакитний для звичайних, темно-синій для активного
                 color: pathname === link.href ? '#053a8f' : '#1890ff', 
                 fontWeight: pathname === link.href ? '500' : '400',
                 fontSize: '16px',

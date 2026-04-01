@@ -1,7 +1,7 @@
 "use client";
 
 import { Layout } from "antd";
-import AppHeader from "./AppHeader";
+import AppHeader from "../AppHeader/AppHeader";
 
 const { Content } = Layout;
 
