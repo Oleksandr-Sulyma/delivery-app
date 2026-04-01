@@ -6,8 +6,10 @@ export const getAllProducts = async (req, res, next) => {
     const {
       shopId,
       category,
+      isAvailable,
+      ids, 
       page = 1,
-      perPage = 8,
+      perPage = 10,
       sortBy = 'createdAt',
       sortOrder = 'asc'
     } = req.query;
@@ -15,6 +17,12 @@ export const getAllProducts = async (req, res, next) => {
     const filter = {};
     if (shopId) filter.shop = shopId;
     if (category) filter.category = category;
+    if (isAvailable !== undefined) filter.isAvailable = isAvailable === 'true';
+
+    if (ids) {
+      const idsArray = ids.split(',');
+      filter._id = { $in: idsArray };
+    }
 
     const pageNum = Math.max(1, Number(page));
     const limitNum = Math.max(1, Number(perPage));
@@ -23,9 +31,9 @@ export const getAllProducts = async (req, res, next) => {
     const [totalItems, products] = await Promise.all([
       Product.countDocuments(filter),
       Product.find(filter)
+        .sort({ isAvailable: -1, [sortBy]: sortOrder === 'asc' ? 1 : -1 })
         .skip(skip)
         .limit(limitNum)
-        .sort({ [sortBy]: sortOrder === 'asc' ? 1 : -1 })
     ]);
 
     res.status(200).json({
@@ -45,6 +53,7 @@ export const getAllProducts = async (req, res, next) => {
 export const getProductById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    
     const product = await Product.findById(id).populate('shop', 'name');
 
     if (!product) {

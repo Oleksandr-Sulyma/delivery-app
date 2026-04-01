@@ -3,35 +3,61 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { Toaster } from "react-hot-toast";
 import ClientLayout from "../components/ClientLayout/ClientLayout";
 import "./globals.css";
+import type { Metadata } from 'next';
 
-export const metadata = {
-  title: "Delivery App | Fast & Delicious Food Delivery",
-  description: "Order your favorite dishes from the best local restaurants. Fast delivery and easy-to-use interface.",
-  keywords: ["food delivery", "order pizza", "burgers online", "React Delivery App"],
-  authors: [{ name: "Oleksandr Sulyma" }],
-  
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+
+  title: {
+    default: 'Delivery App | Fast & Delicious Food Delivery',
+    template: '%s | Delivery App',
+  },
+
+  description:
+    'Order your favorite dishes from the best local restaurants. Fast delivery and easy-to-use interface.',
+
+  keywords: [
+    'food delivery',
+    'order food online',
+    'delivery app',
+    'burgers',
+    'pizza delivery',
+  ],
+
+  authors: [{ name: 'Oleksandr Sulyma' }],
+
   openGraph: {
-    title: "Delivery App — Delicious Food Delivered Fast",
-    description: "The best restaurants in one app. Choose, order, and enjoy your meal!",
-    url: "https://delivery-app-frontend-two.vercel.app",
-    siteName: "Delivery App",
+    title: 'Delivery App — Delicious Food Delivered Fast',
+    description:
+      'Choose a shop, add products to cart, and order food quickly and easily.',
+    url: '/',
+    siteName: 'Delivery App',
+
     images: [
       {
-        url: "/og-image.webp",
+        url: '/og-image.webp',
         width: 1200,
         height: 630,
-        alt: "Delivery App Preview",
+        alt: 'Delivery App Preview',
       },
     ],
-    locale: "en_US",
-    type: "website",
+
+    locale: 'en_US',
+    type: 'website',
   },
 
   twitter: {
-    card: "summary_large_image",
-    title: "Delivery App | Delicious Food",
-    description: "Fast delivery of your favorite meals.",
-    images: ["/og-image.jpg"],
+    card: 'summary_large_image',
+    title: 'Delivery App | Fast Food Delivery',
+    description: 'Order food online from the best local restaurants.',
+    images: ['/og-image.webp'],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

@@ -42,3 +42,19 @@ export const getOrderHistory = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getOrderById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findById(id);
+
+    if (!order) {
+      throw createHttpError(404, 'Order not found');
+    }
+
+    res.status(200).json(order);
+  } catch (error) {
+    next(error);
+  }
+};

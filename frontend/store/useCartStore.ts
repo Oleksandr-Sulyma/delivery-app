@@ -1,27 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { IProduct } from '@/types/types';
-
-export interface ICartItem extends IProduct {
-  quantity: number;
-}
-
-interface CartState {
-  cart: ICartItem[];
-  addToCart: (product: IProduct) => void;
-  resetAndAdd: (product: IProduct) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
-  getTotalPrice: () => number;
-}
+import { CartState, CartItem, Product } from '@/types';
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       cart: [],
+      lastSearch: null,
 
-      addToCart: (product) => {
+      addToCart: (product: Product) => {
         const currentCart = get().cart;
         const existingItem = currentCart.find((item) => item._id === product._id);
 
@@ -38,12 +25,15 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      removeFromCart: (productId) => {
+      removeFromCart: (productId: string) => {
         set({ cart: get().cart.filter((item) => item._id !== productId) });
       },
 
-      updateQuantity: (productId, quantity) => {
-        if (quantity <= 0) return;
+      updateQuantity: (productId: string, quantity: number) => {
+        if (quantity <= 0) {
+          get().removeFromCart(productId);
+          return;
+        }
         set({
           cart: get().cart.map((item) =>
             item._id === productId ? { ...item, quantity } : item
@@ -51,13 +41,33 @@ export const useCartStore = create<CartState>()(
         });
       },
 
+      addManyItems: (newItems: CartItem[]) => {
+        const currentCart = get().cart;
+        const updatedCart = [...currentCart];
+
+        newItems.forEach((newItem) => {
+          const idx = updatedCart.findIndex((item) => item._id === newItem._id);
+          if (idx !== -1) {
+            updatedCart[idx] = { 
+              ...updatedCart[idx], 
+              quantity: updatedCart[idx].quantity + newItem.quantity 
+            };
+          } else {
+            updatedCart.push(newItem);
+          }
+        });
+
+        set({ cart: updatedCart });
+      },
+
       clearCart: () => set({ cart: [] }),
 
       getTotalPrice: () => {
         return get().cart.reduce((total, item) => total + item.price * item.quantity, 0);
       },
-      resetAndAdd: (product: IProduct) => {
-        set({ cart: [{ ...product, quantity: 1 }] });
+
+      setLastSearch: (email: string, phone: string) => {
+        set({ lastSearch: { email, phone } });
       },
     }),
     {

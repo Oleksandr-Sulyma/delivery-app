@@ -17,11 +17,17 @@ export const createOrderSchema = {
           name: Joi.string().required(),
           quantity: Joi.number().integer().min(1).required(),
           price: Joi.number().positive().precision(2).required(),
-
+          imageUrl: Joi.string().uri().allow('', null),
         })
       )
       .min(1)
       .required(),
     totalPrice: Joi.number().positive().required(),
+  }),
+};
+
+export const getOrderByIdSchema = {
+  [Segments.PARAMS]: Joi.object({
+    id: Joi.string().custom(objectIdValidator).required(),
   }),
 };

@@ -25,6 +25,10 @@ const productSchema = new Schema(
       ref: 'Shop',
       required: true,
     },
+    isAvailable: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

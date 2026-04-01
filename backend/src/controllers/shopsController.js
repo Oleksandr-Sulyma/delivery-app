@@ -10,7 +10,7 @@ export const getAllShops = async (req, res, next) => {
     minRating,
     maxRating,
     sortBy = "rating",
-    sortOrder = 'asc'
+    sortOrder = 'desc'
   } = req.query;
 
   const pageNum = Math.max(1, Number(page));
@@ -32,7 +32,7 @@ export const getAllShops = async (req, res, next) => {
       Shop.find(filter)
         .skip(skip)
         .limit(limitNum)
-        .sort({ [sortBy]: sortOrder === 'asc' ? 1 : -1 })
+        .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
     ]);
 
     res.status(200).json({

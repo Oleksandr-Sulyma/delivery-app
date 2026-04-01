@@ -1,51 +1,73 @@
-import Image from 'next/image';
-import { useState } from 'react';
-import { Card, Button, Typography, Flex } from "antd";
-import type { IProduct } from "@/types/types";
+"use client";
+
+import Image from "next/image";
+import { useState } from "react";
+import { Card, Button, Typography, Flex, Tag } from "antd";
+import { useCartStore } from "@/store/useCartStore";
+import type { Product } from "@/types/index";
 
 const { Text, Title } = Typography;
 
-interface ProductCardProps {
-  product: IProduct;
-  onAddToCart: (product: IProduct) => void;
-}
+export default function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: (p: Product) => void }) {
+  const [imgSrc, setImgSrc] = useState(product.imageUrl || "/no-image.webp");
+  const isInCart = useCartStore((state) => state.cart.some((item) => item._id === product._id));
+  
+ 
+  const isAvailable = product.isAvailable !== false; 
 
-export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
-const [imgSrc, setImgSrc] = useState(product.imageUrl || "/no-image.webp");
   return (
     <Card
-      hoverable
-      style={{ width: '100%', borderRadius: '12px', overflow: 'hidden' }}
+      hoverable={isAvailable}
+      style={{ 
+        width: "100%", 
+        borderRadius: "12px", 
+        overflow: "hidden",
+        opacity: isAvailable ? 1 : 0.6,
+        filter: isAvailable ? "none" : "grayscale(0.5)" 
+      }}
       cover={
-        <div style={{ position: 'relative', height: '180px', width: '100%' }}>
+        <div style={{ position: "relative", height: "160px", width: "100%" }}>
           <Image
             alt={product.name}
             src={imgSrc}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             style={{ objectFit: "cover" }}
             onError={() => setImgSrc("/no-image.webp")}
           />
+          <Tag color="blue" style={{ position: 'absolute', top: 8, left: 8, margin: 0 }}>
+            {product.category}
+          </Tag>
+
+          {!isAvailable && (
+            <div style={{
+              position: 'absolute',
+              top: 0, left: 0, right: 0, bottom: 0,
+              background: 'rgba(0,0,0,0.4)',
+              display: 'flex', justifyContent: 'center', alignItems: 'center',
+              color: 'white', fontWeight: 'bold', fontSize: '16px'
+            }}>
+              OUT OF STOCK
+            </div>
+          )}
         </div>
       }
     >
-      <Flex vertical gap="middle">
-        <Flex justify="space-between" align="flex-start">
-          <Title level={5} style={{ margin: 0, maxWidth: '60%' }}>
-            {product.name}
-          </Title>
-          <Text strong style={{ fontSize: '18px', color: '#1890ff' }}>
-            {product.price} UAH
-          </Text>
-        </Flex>
-
-        <Flex justify="flex-end">
-          <Button 
-            type="primary" 
-            size="large"
-            style={{ width: '160px', borderRadius: '8px' }}
-            onClick={() => onAddToCart(product)}
+      <Flex vertical gap="small">
+        <Title level={5} style={{ margin: 0, height: '44px', overflow: 'hidden' }}>
+          {product.name}
+        </Title>
+        
+        <Flex justify="space-between" align="center">
+          <Text strong style={{ fontSize: "17px" }}>{product.price} UAH</Text>
+          
+          <Button
+            type={isInCart ? "default" : "primary"}
+            danger={isInCart && isAvailable}
+            disabled={!isAvailable} 
+            onClick={() => isAvailable && onAddToCart(product)}
           >
-            Add to Cart
+            {!isAvailable ? "Not Available" : (isInCart ? "Remove" : "Add to Cart")}
           </Button>
         </Flex>
       </Flex>
