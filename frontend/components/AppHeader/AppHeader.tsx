@@ -1,11 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Layout, Badge, Button, Drawer, Space, Flex } from 'antd';
-import { MenuOutlined, ShoppingCartOutlined, HistoryOutlined, ShopOutlined } from '@ant-design/icons';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useCartStore } from '@/store/useCartStore';
+import { useState } from "react";
+import { Layout, Badge, Button, Drawer, Space, Flex } from "antd";
+import {
+  MenuOutlined,
+  ShoppingCartOutlined,
+  HistoryOutlined,
+  ShopOutlined,
+  GiftOutlined,
+} from "@ant-design/icons";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useCartStore } from "@/store/useCartStore";
 
 const { Header } = Layout;
 
@@ -16,45 +22,67 @@ export default function AppHeader() {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const navLinks = [
-    { name: 'Shop', href: '/', icon: <ShopOutlined /> },
-    { name: 'Shopping Cart', href: '/cart', hasBadge: true, icon: <ShoppingCartOutlined /> },
-    { name: 'History', href: '/history', icon: <HistoryOutlined /> },
+    { name: "Shop", href: "/", icon: <ShopOutlined /> },
+    {
+      name: "Shopping Cart",
+      href: "/cart",
+      hasBadge: true,
+      icon: <ShoppingCartOutlined />,
+    },
+    { name: "History", href: "/history", icon: <HistoryOutlined /> },
+    {name: 'Coupons', href: '/coupons', icon: <GiftOutlined /> },
   ];
 
   const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
 
   return (
-    <Header style={{
-      background: '#fff',
-      display: 'flex',
-      padding: '0 20px',
-      height: '64px',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      borderBottom: '1px solid #f0f0f0',
-      position: 'sticky',
-      top: 0,
-      zIndex: 1000,
-    }}>
-      <Link href="/" style={{ fontSize: '18px', fontWeight: '700', color: '#1890ff', whiteSpace: 'nowrap' }}>
+    <Header
+      style={{
+        background: "#fff",
+        display: "flex",
+        padding: "0 20px",
+        height: "64px",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderBottom: "1px solid #f0f0f0",
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
+      }}
+    >
+      <Link
+        href="/"
+        style={{
+          fontSize: "18px",
+          fontWeight: "700",
+          color: "#1890ff",
+          whiteSpace: "nowrap",
+        }}
+      >
         🍔 Delivery App
       </Link>
-      <nav className="desktop-nav" style={{ display: 'flex', alignItems: 'center' }}>
+      <nav
+        className="desktop-nav"
+        style={{ display: "flex", alignItems: "center" }}
+      >
         {navLinks.map((link, index) => {
           const isActive = pathname === link.href;
           return (
-            <div key={link.href} style={{ display: 'flex', alignItems: 'center' }}>
+            <div
+              key={link.href}
+              style={{ display: "flex", alignItems: "center" }}
+            >
               <Link
                 href={link.href}
                 style={{
-                  textDecoration: 'none',
-                  color: isActive ? '#053a8f' : '#1890ff',
-                  fontWeight: isActive ? '500' : '400',
-                  fontSize: '16px',
-                  padding: '0 5px',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center'
+                  textDecoration: "none",
+                  color: isActive ? "#053a8f" : "#1890ff",
+                  fontWeight: isActive ? "500" : "400",
+                  fontSize: "16px",
+                  padding: "0 5px",
+                  transition: "all 0.2s ease",
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
                 {link.name}
@@ -62,12 +90,21 @@ export default function AppHeader() {
                   <Badge
                     count={totalItems}
                     size="small"
-                    style={{ backgroundColor: '#ff4d4f', marginLeft: '8px', boxShadow: 'none' }}
+                    style={{
+                      backgroundColor: "#ff4d4f",
+                      marginLeft: "8px",
+                      boxShadow: "none",
+                    }}
                   />
                 )}
               </Link>
               {index < navLinks.length - 1 && (
-                <span className="nav-divider" style={{ margin: '0 15px', color: '#d9d9d9' }}>|</span>
+                <span
+                  className="nav-divider"
+                  style={{ margin: "0 15px", color: "#d9d9d9" }}
+                >
+                  |
+                </span>
               )}
             </div>
           );
@@ -77,9 +114,9 @@ export default function AppHeader() {
       <Button
         className="mobile-menu-btn"
         type="text"
-        icon={<MenuOutlined style={{ fontSize: '20px' }} />}
+        icon={<MenuOutlined style={{ fontSize: "20px" }} />}
         onClick={toggleDrawer}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
       />
 
       <Drawer
@@ -88,9 +125,9 @@ export default function AppHeader() {
         onClose={toggleDrawer}
         open={isDrawerOpen}
         size="default"
-        styles={{ body: { padding: '20px' }, wrapper: { width: 250 } }}
+        styles={{ body: { padding: "20px" }, wrapper: { width: 250 } }}
       >
-        <Flex vertical gap="large" style={{ width: '100%' }}>
+        <Flex vertical gap="large" style={{ width: "100%" }}>
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -99,14 +136,14 @@ export default function AppHeader() {
                 href={link.href}
                 onClick={toggleDrawer}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  fontSize: '18px',
-                  color: isActive ? '#053a8f' : '#1890ff',
-                  fontWeight: isActive ? '600' : '400',
-                  width: '100%',
-                  padding: '10px 0'
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  fontSize: "18px",
+                  color: isActive ? "#053a8f" : "#1890ff",
+                  fontWeight: isActive ? "600" : "400",
+                  width: "100%",
+                  padding: "10px 0",
                 }}
               >
                 <Space>
@@ -114,7 +151,10 @@ export default function AppHeader() {
                   {link.name}
                 </Space>
                 {link.hasBadge && totalItems > 0 && (
-                  <Badge count={totalItems} style={{ backgroundColor: '#ff4d4f' }} />
+                  <Badge
+                    count={totalItems}
+                    style={{ backgroundColor: "#ff4d4f" }}
+                  />
                 )}
               </Link>
             );

@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CartState, CartItem, Product } from '@/types';
+import { CartState, CartItem, Product, AppliedCoupon } from '@/types';
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       cart: [],
       lastSearch: null,
+      appliedCoupon: null,
 
       addToCart: (product: Product) => {
         const currentCart = get().cart;
@@ -60,10 +61,22 @@ export const useCartStore = create<CartState>()(
         set({ cart: updatedCart });
       },
 
-      clearCart: () => set({ cart: [] }),
+      clearCart: () => set({ cart: [], appliedCoupon: null }),
+
+      applyCoupon: (coupon: AppliedCoupon | null) => {
+        set({ appliedCoupon: coupon });
+      },
 
       getTotalPrice: () => {
-        return get().cart.reduce((total, item) => total + item.price * item.quantity, 0);
+        const { cart, appliedCoupon } = get();
+        const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+        
+        if (appliedCoupon) {
+          const discountAmount = (subtotal * appliedCoupon.discount) / 100;
+          return Math.round(subtotal - discountAmount);
+        }
+        
+        return subtotal;
       },
 
       setLastSearch: (email: string, phone: string) => {

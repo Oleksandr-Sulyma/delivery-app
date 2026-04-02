@@ -23,6 +23,7 @@ export const createOrderSchema = {
       .min(1)
       .required(),
     totalPrice: Joi.number().positive().required(),
+    couponCode: Joi.string().allow(null, '').uppercase(),
   }),
 };
 

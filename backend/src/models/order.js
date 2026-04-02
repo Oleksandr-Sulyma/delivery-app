@@ -25,6 +25,11 @@ const orderSchema = new Schema(
     },
     items: [orderItemSchema],
     totalPrice: { type: Number, required: true },
+    couponCode: { 
+      type: String, 
+      uppercase: true, 
+      default: null 
+    },
     status: {
       type: String,
       enum: ['Pending', 'Completed', 'Cancelled'],

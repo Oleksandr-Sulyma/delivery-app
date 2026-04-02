@@ -5,7 +5,8 @@ import type {
   GetProductsParams, 
   PaginatedResponse, 
   OrderCreateData,
-  OrderResponse
+  OrderResponse,
+  Coupon
 } from '../types/index';
 
 export const api = axios.create({
@@ -70,6 +71,18 @@ export const orderService = {
 
   getOrderById: async (orderId: string): Promise<OrderResponse> => {
     const { data } = await api.get(`/orders/${orderId}`);
+    return data;
+  }
+};
+
+export const couponService = {
+  getAll: async (): Promise<Coupon[]> => {
+    const { data } = await api.get('/coupons');
+    return data;
+  },
+  
+  validate: async (code: string): Promise<{ name: string; discount: number }> => {
+    const { data } = await api.get(`/coupons/validate/${code}`);
     return data;
   }
 };

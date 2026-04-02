@@ -12,6 +12,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import shopsRouter from './routes/shopsRoutes.js';
 import ordersRouter from './routes/ordersRoutes.js';
 import productsRouter from './routes/productsRoutes.js';
+import couponsRouter from './routes/couponsRoutes.js';
 
 dns.setServers(['1.1.1.1']);
 
@@ -29,6 +30,8 @@ app.use(helmet());
 app.use('/shops', shopsRouter);
 app.use('/orders', ordersRouter);
 app.use('/products', productsRouter);
+app.use('/coupons', couponsRouter);
+
 
 app.use(notFoundHandler);
 app.use(errors());

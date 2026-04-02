@@ -1,9 +1,10 @@
 import { Order } from '../models/order.js';
+import { Coupon } from '../models/coupon.js';
 import createHttpError from 'http-errors';
 
 export const createOrder = async (req, res, next) => {
   try {
-    const { user, items, totalPrice } = req.body;
+    const { user, items, totalPrice, couponCode } = req.body;
 
     if (!user || !items?.length) {
       throw createHttpError(400, 'User data and cart items are required');
@@ -13,7 +14,15 @@ export const createOrder = async (req, res, next) => {
       user,
       items,
       totalPrice,
+      couponCode,
     });
+
+    if (couponCode) {
+      await Coupon.findOneAndUpdate(
+        { code: couponCode.toUpperCase() },
+        { isActive: false }
+      );
+    }
 
     res.status(201).json(newOrder);
   } catch (error) {

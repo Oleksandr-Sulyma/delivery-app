@@ -28,12 +28,14 @@ export interface CartItem extends Product {
 
 export interface CartState {
   cart: CartItem[];
-  lastSearch: { email: string; phone: string } | null; 
+  lastSearch: { email: string; phone: string } | null;
+  appliedCoupon: AppliedCoupon | null; 
   addToCart: (product: Product) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   addManyItems: (newItems: CartItem[]) => void;
   clearCart: () => void;
+  applyCoupon: (coupon: AppliedCoupon | null) => void;
   getTotalPrice: () => number;
   setLastSearch: (email: string, phone: string) => void;
 }
@@ -82,4 +84,18 @@ export interface OrderResponse extends OrderCreateData {
   status: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Coupon {
+  _id: string;
+  name: string;
+  code: string;
+  discount: number;
+  imageUrl?: string;
+  isActive: boolean;
+  expiresAt: string;
+}
+export interface AppliedCoupon {
+  code: string;
+  discount: number;
 }
