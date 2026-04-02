@@ -5,7 +5,7 @@ import createHttpError from 'http-errors';
 export const getAllShops = async (req, res, next) => {
   const {
     page = 1,
-    perPage = 10,
+    perPage = 12,
     name,
     minRating,
     maxRating,

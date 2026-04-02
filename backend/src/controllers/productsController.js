@@ -7,20 +7,30 @@ export const getAllProducts = async (req, res, next) => {
       shopId,
       category,
       isAvailable,
-      ids, 
+      ids,
       page = 1,
-      perPage = 10,
+      perPage = 12,
       sortBy = 'createdAt',
       sortOrder = 'asc'
     } = req.query;
 
     const filter = {};
     if (shopId) filter.shop = shopId;
-    if (category) filter.category = category;
+
+    if (category) {
+      const categoryArray = Array.isArray(category)
+        ? category
+        : category.split(',').filter(Boolean);
+
+      if (categoryArray.length > 0) {
+        filter.category = { $in: categoryArray };
+      }
+    }
+
     if (isAvailable !== undefined) filter.isAvailable = isAvailable === 'true';
 
     if (ids) {
-      const idsArray = ids.split(',');
+      const idsArray = ids.split(',').filter(Boolean);
       filter._id = { $in: idsArray };
     }
 
@@ -53,7 +63,7 @@ export const getAllProducts = async (req, res, next) => {
 export const getProductById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    
+
     const product = await Product.findById(id).populate('shop', 'name');
 
     if (!product) {

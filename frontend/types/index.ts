@@ -29,7 +29,9 @@ export interface CartItem extends Product {
 export interface CartState {
   cart: CartItem[];
   lastSearch: { email: string; phone: string } | null;
-  appliedCoupon: AppliedCoupon | null; 
+  appliedCoupon: AppliedCoupon | null;
+  isDarkMode: boolean;
+  toggleTheme: () => void;
   addToCart: (product: Product) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
@@ -75,7 +77,7 @@ export interface OrderCreateData {
     phone: string;
     address: string;
   };
-  items: OrderItem[]; 
+  items: OrderItem[];
   totalPrice: number;
 }
 
@@ -98,4 +100,12 @@ export interface Coupon {
 export interface AppliedCoupon {
   code: string;
   discount: number;
+}
+
+interface ProductListProps {
+  products: Product[];
+  onAddToCart: (product: Product) => void;
+  selectedCategories: string[];
+  onCategoryChange: (categories: string[]) => void;
+  onSortChange: (value: string) => void;
 }

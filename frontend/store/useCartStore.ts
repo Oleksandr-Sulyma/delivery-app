@@ -8,6 +8,7 @@ export const useCartStore = create<CartState>()(
       cart: [],
       lastSearch: null,
       appliedCoupon: null,
+      isDarkMode: false,
 
       addToCart: (product: Product) => {
         const currentCart = get().cart;
@@ -81,6 +82,10 @@ export const useCartStore = create<CartState>()(
 
       setLastSearch: (email: string, phone: string) => {
         set({ lastSearch: { email, phone } });
+      },
+
+      toggleTheme: () => {
+        set({ isDarkMode: !get().isDarkMode });
       },
     }),
     {

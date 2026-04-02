@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import HomeClient from './HomeClient';
 
 export const metadata: Metadata = {
-  title: 'Delivery App | Food Delivery & Shops',
+  title: 'Home',
   description:
     'Browse local shops, explore menus, and order food quickly with fast delivery.',
   keywords: [

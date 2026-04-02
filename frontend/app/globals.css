@@ -1,22 +1,58 @@
-/* globals.css */
+* {
+  box-sizing: border-box;
+}
 
 html,
 body {
   margin: 0 !important;
   padding: 0 !important;
-  height: 100%;
   width: 100%;
-  /* Не ставимо тут max-width, щоб фон міг бути на весь екран */
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-* {
-  box-sizing: border-box;
+:root {
+  background-color: #ffffff;
+  color: rgba(0, 0, 0, 0.88);
 }
 
-/* Створюємо глобальний клас для обмеження контенту */
+html[data-theme='dark'],
+html[data-theme='dark'] body,
+html[data-theme='dark'] .ant-layout {
+  background-color: #000000 !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+html[data-theme='dark'] .ant-card,
+html[data-theme='dark'] .ant-card-body,
+html[data-theme='dark'] .ant-list-item,
+html[data-theme='dark'] .ant-collapse-header,
+html[data-theme='dark'] .ant-collapse-content,
+html[data-theme='dark'] .ant-tabs-nav,
+html[data-theme='dark'] .ant-tabs-content-holder,
+html[data-theme='dark'] .ant-input,
+html[data-theme='dark'] .ant-select-selector,
+html[data-theme='dark'] .ant-layout-sider,
+html[data-theme='dark'] .ant-menu {
+  background-color: #141414 !important;
+  color: #ffffff !important;
+  border-color: #303030 !important;
+}
+
+html[data-theme='dark'] .ant-card-meta-title,
+html[data-theme='dark'] .ant-card-meta-description {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+html[data-theme='dark'] .ant-btn-default {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border-color: #434343 !important;
+}
+
 .container {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 30px; /* Відступи, щоб на мобільних текст не прилипав до країв */
+  padding: 0 30px;
   width: 100%;
 }
