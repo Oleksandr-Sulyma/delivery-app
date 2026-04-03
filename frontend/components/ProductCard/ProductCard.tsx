@@ -35,16 +35,32 @@ export default function ProductCard({ product, onAddToCart, index = 0 }: Product
         height: "100%",
         opacity: isAvailable ? 1 : 0.6,
         filter: isAvailable ? "none" : "grayscale(0.5)",
+        borderRadius: "12px",
+        overflow: "hidden",
       }}
       styles={{ body: { padding: "16px", flex: 1, display: "flex", flexDirection: "column" } }}
       cover={
-        <div style={{ position: "relative", height: "160px", width: "100%", background: token.colorFillTertiary }}>
+        <div
+          style={{
+            position: "relative",
+            height: "160px",
+            width: "100%",
+            background: token.colorFillTertiary,
+            borderTopLeftRadius: "12px",
+            borderTopRightRadius: "12px",
+            overflow: "hidden"
+          }}
+        >
           <Image
             alt={product.name}
             src={imgSrc}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1440px) 50vw, 25vw"
-            style={{ objectFit: "cover" }}
+            style={{
+              objectFit: "cover",
+              borderTopLeftRadius: "12px",
+              borderTopRightRadius: "12px"
+            }}
             priority={index < 4}
             onError={() => setImgSrc("/no-image.webp")}
           />
