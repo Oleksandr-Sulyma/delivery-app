@@ -1,14 +1,11 @@
-'use client';
+"use client";
 
-import { Card, Typography, Flex, Tag, Select, Empty, theme } from 'antd'; // Додав theme
-import {
-  EnvironmentOutlined,
-  StarFilled,
-  FilterOutlined,
-} from '@ant-design/icons';
+import { Typography, Select, Empty, theme, Row, Col } from 'antd';
+import { FilterOutlined } from '@ant-design/icons';
 import type { Shop } from '@/types/index';
+import ShopCard from '../ShopCard/ShopCard';
 
-const { Text, Title } = Typography;
+const { Title } = Typography;
 
 interface ShopListProps {
   shops: Shop[];
@@ -23,15 +20,14 @@ export default function ShopList({
   onSelectShop,
   onFilterChange,
 }: ShopListProps) {
-  const { token } = theme.useToken(); // Отримуємо токен для фону
+  const { token } = theme.useToken();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {/* --- ЦЕЙ БЛОК ТЕПЕР ФІКСОВАНИЙ --- */}
       <div
         style={{
           position: 'sticky',
-          top: '-20px', // Повертаємо до 0 або враховуємо падінг батька
+          top: '-20px',
           zIndex: 10,
           background: token.colorBgContainer,
           paddingBottom: '12px',
@@ -67,98 +63,24 @@ export default function ShopList({
           ]}
         />
       </div>
-      {/* ---------------------------------- */}
 
-      {Array.isArray(shops) && shops.length > 0 ? (
-        shops.map((shop) => {
-          const isActive = selectedShopId === shop._id;
-
-          return (
-            <Card
-              key={shop._id}
-              hoverable
-              onClick={() => onSelectShop(shop._id)}
-              cover={
-                <div
-                  style={{
-                    position: 'relative',
-                    height: '100px',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <img
-                    alt={shop.name}
-                    src={shop.imageUrl || '/no-image.webp'}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                  <Tag
-                    color="#faad14"
-                    style={{
-                      position: 'absolute',
-                      top: '8px',
-                      right: '4px',
-                      margin: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      borderRadius: '4px',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    <StarFilled />{' '}
-                    {shop.rating ? shop.rating.toFixed(1) : '0.0'}
-                  </Tag>
-                </div>
-              }
-              style={{
-                borderRadius: '12px',
-                overflow: 'hidden',
-                transition: 'all 0.3s ease',
-                border: isActive ? '2px solid #1890ff' : '1px solid #f0f0f0',
-                boxShadow: isActive
-                  ? '0 4px 12px rgba(24, 144, 255, 0.2)'
-                  : 'none',
-                transform: isActive ? 'scale(1.02)' : 'scale(1)',
-              }}
-              styles={{ body: { padding: '12px' } }}
-            >
-              <Flex vertical gap={2} style={{ width: '100%' }}>
-                <Text strong style={{ fontSize: '16px', display: 'block' }}>
-                  {shop.name}
-                </Text>
-
-                <Text
-                  type="secondary"
-                  style={{
-                    fontSize: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                  }}
-                >
-                  <EnvironmentOutlined style={{ color: '#ff4d4f' }} />
-                  <span
-                    style={{
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '100%',
-                    }}
-                  >
-                    {shop.address}
-                  </span>
-                </Text>
-              </Flex>
-            </Card>
-          );
-        })
-      ) : (
-        <Empty description="No shops found" style={{ marginTop: '20px' }} />
-      )}
+      <Row gutter={[16, 16]}>
+        {Array.isArray(shops) && shops.length > 0 ? (
+          shops.map((shop) => (
+            <Col key={shop._id} xs={24} md={12} xl={24}>
+              <ShopCard
+                shop={shop}
+                isActive={selectedShopId === shop._id}
+                onSelect={onSelectShop}
+              />
+            </Col>
+          ))
+        ) : (
+          <Col span={24}>
+            <Empty description="No shops found" style={{ marginTop: '20px' }} />
+          </Col>
+        )}
+      </Row>
     </div>
   );
 }

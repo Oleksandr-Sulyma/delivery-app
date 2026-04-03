@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Row, Col, theme, App, Spin, Flex } from 'antd';
+import { Row, Col, theme, App, Spin, Flex, Grid } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import toast from 'react-hot-toast';
 import { shopsService, productsService } from '@/services/api';
@@ -10,10 +10,13 @@ import { Shop, Product, PaginatedResponse } from '@/types';
 import ShopSection from '@/components/ShopSection/ShopSection';
 import ProductSection from '@/components/ProductSection/ProductSection';
 
+const { useBreakpoint } = Grid;
+
 export default function HomeClient() {
   const { modal } = App.useApp();
   const { token } = theme.useToken();
-  const { cart, addToCart, removeFromCart, clearCart, isDarkMode } = useCartStore();
+  const screens = useBreakpoint();
+  const { cart, addToCart, removeFromCart, clearCart } = useCartStore();
 
   const [shops, setShops] = useState<Shop[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -26,15 +29,14 @@ export default function HomeClient() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  
   const [ratingRange, setRatingRange] = useState<{ min: number | null; max: number | null }>({
     min: null,
     max: null,
   });
 
-  const isInitialMount = useRef(true);
+  const productsRef = useRef<HTMLDivElement>(null);
+  const isDesktop = screens.xl; // 1440px+
 
-  // 1. Завантаження магазинів - використовуємо примітиви в залежностях, щоб уникнути циклу
   useEffect(() => {
     const fetchShops = async () => {
       setIsLoadingShops(true);
@@ -43,11 +45,7 @@ export default function HomeClient() {
           minRating: ratingRange.min ?? undefined,
           maxRating: ratingRange.max ?? undefined,
         });
-
-        const shopsArray = Array.isArray(response)
-          ? response
-          : (response as PaginatedResponse<Shop>).data;
-        
+        const shopsArray = Array.isArray(response) ? response : (response as PaginatedResponse<Shop>).data;
         setShops(shopsArray);
       } catch (err) {
         toast.error('Failed to load shops');
@@ -56,24 +54,18 @@ export default function HomeClient() {
       }
     };
     fetchShops();
-  }, [ratingRange.min, ratingRange.max]); // КРИТИЧНО: тільки примітиви
+  }, [ratingRange.min, ratingRange.max]);
 
-  // 2. Встановлення дефолтного магазину
   useEffect(() => {
-    if (shops.length > 0) {
-      const isStillAvailable = shops.find((s) => s._id === selectedShopId);
-      if (!selectedShopId || !isStillAvailable) {
-        setSelectedShopId(shops[0]._id);
-      }
+    if (shops.length > 0 && !selectedShopId) {
+      setSelectedShopId(shops[0]._id);
     }
   }, [shops, selectedShopId]);
 
-  // 3. Запит продуктів
   const fetchProducts = useCallback(
     async (pageToFetch: number, isInitial: boolean) => {
       if (!selectedShopId || isLoadingProducts) return;
       if (!hasMore && !isInitial) return;
-
       setIsLoadingProducts(true);
       try {
         const response = await productsService.getAllProducts({
@@ -84,13 +76,10 @@ export default function HomeClient() {
           sortBy,
           sortOrder,
         });
-
         const newProducts = response.data || [];
         const total = response.totalItems || 0;
-
         setProducts((prev) => {
           const finalProducts = isInitial ? newProducts : [...prev, ...newProducts];
-          // Жорстка перевірка hasMore, щоб не смикати page=2, якщо прийшло менше 12 або все завантажено
           setHasMore(finalProducts.length < total && newProducts.length === 12);
           return finalProducts;
         });
@@ -104,7 +93,6 @@ export default function HomeClient() {
     [selectedShopId, selectedCategories, sortBy, sortOrder, isLoadingProducts, hasMore]
   );
 
-  // 4. Скидання при зміні фільтрів
   useEffect(() => {
     if (!selectedShopId) return;
     setProducts([]);
@@ -113,12 +101,28 @@ export default function HomeClient() {
     fetchProducts(1, true);
   }, [selectedShopId, selectedCategories, sortBy, sortOrder]);
 
-  // 5. Пагінація (тільки для наступних сторінок)
   useEffect(() => {
     if (currentPage > 1) {
       fetchProducts(currentPage, false);
     }
-  }, [currentPage, fetchProducts]); // Тільки currentPage в залежностях
+  }, [currentPage, fetchProducts]);
+
+  const handleShopSelect = (id: string) => {
+    setSelectedShopId(id);
+    setSelectedCategories([]);
+    setCurrentPage(1);
+
+    if (!isDesktop && productsRef.current) {
+      const headerOffset = 70;
+      const elementPosition = productsRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const handleLoadMore = () => {
     if (!isLoadingProducts && hasMore) {
@@ -133,7 +137,6 @@ export default function HomeClient() {
       toast.success(`${product.name} removed`);
       return;
     }
-
     if (cart.length > 0 && cart[0].shop !== product.shop) {
       modal.confirm({
         title: 'Change shop?',
@@ -166,40 +169,55 @@ export default function HomeClient() {
   }
 
   return (
-    <main style={{ minHeight: '100vh', padding: '40px 0', background: isDarkMode ? '#141414' : '#f5f5f5' }}>
+    <main style={{ minHeight: '100vh', padding: '20px 0' }}>
       <div className="container">
-        <Row gutter={[24, 24]} align="stretch" style={{ display: 'flex' }}>
-          <Col xs={24} md={8} lg={6}>
+        {isDesktop ? (
+          <Row gutter={[24, 24]} align="stretch">
+            <Col span={6}>
+              <ShopSection
+                shops={shops}
+                selectedShopId={selectedShopId}
+                onShopSelect={handleShopSelect}
+                onRatingFilter={(min, max) => setRatingRange({ min, max })}
+              />
+            </Col>
+            <Col span={18}>
+              <ProductSection
+                isLoading={isLoadingProducts}
+                products={products}
+                hasMore={hasMore}
+                selectedShopId={selectedShopId}
+                selectedCategories={selectedCategories}
+                onAddToCart={handleCartAction}
+                onCategoryChange={(cats) => setSelectedCategories(cats)}
+                onSortChange={handleSortChange}
+                onLoadMore={handleLoadMore}
+              />
+            </Col>
+          </Row>
+        ) : (
+          <Flex vertical gap={24}>
             <ShopSection
               shops={shops}
               selectedShopId={selectedShopId}
-              isDarkMode={isDarkMode}
-              isMobile={false}
-              onShopSelect={(id) => {
-                setSelectedShopId(id);
-                setSelectedCategories([]);
-                setCurrentPage(1);
-              }}
+              onShopSelect={handleShopSelect}
               onRatingFilter={(min, max) => setRatingRange({ min, max })}
             />
-          </Col>
-
-          <Col xs={24} md={16} lg={18}>
-            <ProductSection
-              isLoading={isLoadingProducts}
-              products={products}
-              hasMore={hasMore}
-              selectedShopId={selectedShopId}
-              selectedCategories={selectedCategories}
-              isDarkMode={isDarkMode}
-              isMobile={false}
-              onAddToCart={handleCartAction}
-              onCategoryChange={(cats) => setSelectedCategories(cats)}
-              onSortChange={handleSortChange}
-              onLoadMore={handleLoadMore}
-            />
-          </Col>
-        </Row>
+            <div ref={productsRef}>
+              <ProductSection
+                isLoading={isLoadingProducts}
+                products={products}
+                hasMore={hasMore}
+                selectedShopId={selectedShopId}
+                selectedCategories={selectedCategories}
+                onAddToCart={handleCartAction}
+                onCategoryChange={(cats) => setSelectedCategories(cats)}
+                onSortChange={handleSortChange}
+                onLoadMore={handleLoadMore}
+              />
+            </div>
+          </Flex>
+        )}
       </div>
     </main>
   );

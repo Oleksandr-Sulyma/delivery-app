@@ -1,11 +1,11 @@
 "use client";
 
-import { Row, Col, Select, Checkbox, Flex, Typography, theme } from "antd";
+import { Row, Col, Select, Checkbox, Flex, Typography, theme, Grid } from "antd";
 import ProductCard from "../ProductCard/ProductCard";
 import type { Product } from "@/types/index";
-import { useCartStore } from "@/store/useCartStore";
 
 const { Text } = Typography;
+const { useBreakpoint } = Grid;
 
 interface ProductListProps {
   products: Product[];
@@ -22,31 +22,32 @@ export default function ProductList({
   onCategoryChange,
   onSortChange,
 }: ProductListProps) {
-  const isDarkMode = useCartStore((state) => state.isDarkMode);
   const { token } = theme.useToken();
+  const screens = useBreakpoint();
+
+  const isDesktop = screens.xl;
+
   const categories = ["Burgers", "Pizzas", "Drinks", "Sushi", "Desserts"];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      
-      {/* --- ШАПКА ЯК У МАГАЗИНАХ --- */}
       <div
         style={{
           position: "sticky",
-          top: "64px", 
+          top: !isDesktop ? "114px" : "64px",
           zIndex: 100,
           background: token.colorBgContainer,
-          paddingTop: "20px",    // Компенсуємо відсутній падінг батька
-          paddingBottom: "15px", // Відступ до карток
-          // marginBottom: "5px",
+          paddingTop: "10px",
+          paddingBottom: "15px",
+          transition: "top 0.3s ease",
         }}
       >
         <div
           style={{
-            background: isDarkMode ? token.colorFillAlter : "#fafafa",
+            background: token.colorFillAlter,
             padding: "15px",
             borderRadius: "8px",
-            border: `1px solid ${isDarkMode ? token.colorBorderSecondary : "#f0f0f0"}`,
+            border: `1px solid ${token.colorBorderSecondary}`,
             boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
           }}
         >
@@ -81,10 +82,17 @@ export default function ProductList({
         </div>
       </div>
 
-      {/* --- СПИСОК ТОВАРІВ --- */}
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 24]}>
         {products.map((product, index) => (
-          <Col key={product._id} xs={24} sm={12} lg={8} xl={6}>
+          <Col
+            key={product._id}
+            xs={24}
+            sm={12}
+            md={12}
+            lg={8}
+            xl={8}
+            xxl={8}
+          >
             <ProductCard product={product} onAddToCart={onAddToCart} index={index}/>
           </Col>
         ))}

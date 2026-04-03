@@ -8,29 +8,26 @@ export const useCartStore = create<CartState>()(
       cart: [],
       lastSearch: null,
       appliedCoupon: null,
-      isDarkMode: false,
+      isDarkMode: false, 
+
+      toggleTheme: () => set({ isDarkMode: !get().isDarkMode }),
 
       addToCart: (product: Product) => {
         const currentCart = get().cart;
         const existingItem = currentCart.find((item) => item._id === product._id);
-
         if (existingItem) {
           set({
             cart: currentCart.map((item) =>
-              item._id === product._id 
-                ? { ...item, quantity: item.quantity + 1 } 
-                : item
+              item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item
             ),
           });
         } else {
           set({ cart: [...currentCart, { ...product, quantity: 1 }] });
         }
       },
-
       removeFromCart: (productId: string) => {
         set({ cart: get().cart.filter((item) => item._id !== productId) });
       },
-
       updateQuantity: (productId: string, quantity: number) => {
         if (quantity <= 0) {
           get().removeFromCart(productId);
@@ -42,54 +39,39 @@ export const useCartStore = create<CartState>()(
           ),
         });
       },
-
       addManyItems: (newItems: CartItem[]) => {
         const currentCart = get().cart;
         const updatedCart = [...currentCart];
-
         newItems.forEach((newItem) => {
           const idx = updatedCart.findIndex((item) => item._id === newItem._id);
           if (idx !== -1) {
-            updatedCart[idx] = { 
-              ...updatedCart[idx], 
-              quantity: updatedCart[idx].quantity + newItem.quantity 
-            };
+            updatedCart[idx] = { ...updatedCart[idx], quantity: updatedCart[idx].quantity + newItem.quantity };
           } else {
             updatedCart.push(newItem);
           }
         });
-
         set({ cart: updatedCart });
       },
-
       clearCart: () => set({ cart: [], appliedCoupon: null }),
-
-      applyCoupon: (coupon: AppliedCoupon | null) => {
-        set({ appliedCoupon: coupon });
-      },
-
+      applyCoupon: (coupon: AppliedCoupon | null) => set({ appliedCoupon: coupon }),
       getTotalPrice: () => {
         const { cart, appliedCoupon } = get();
         const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-        
         if (appliedCoupon) {
           const discountAmount = (subtotal * appliedCoupon.discount) / 100;
           return Math.round(subtotal - discountAmount);
         }
-        
         return subtotal;
       },
-
-      setLastSearch: (email: string, phone: string) => {
-        set({ lastSearch: { email, phone } });
-      },
-
-      toggleTheme: () => {
-        set({ isDarkMode: !get().isDarkMode });
-      },
+      setLastSearch: (email: string, phone: string) => set({ lastSearch: { email, phone } }),
     }),
     {
       name: 'cart-storage',
+      partialize: (state) => ({
+        cart: state.cart,
+        isDarkMode: state.isDarkMode,
+        lastSearch: state.lastSearch
+      }),
     }
   )
 );

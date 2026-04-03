@@ -1,3 +1,6 @@
+// ==========================================
+// 1. Core Domain Models
+// ==========================================
 export type Category = 'Burgers' | 'Pizzas' | 'Drinks' | 'Sushi' | 'Desserts';
 
 export interface Shop {
@@ -22,6 +25,9 @@ export interface Product {
   updatedAt?: string;
 }
 
+// ==========================================
+// 2. Shopping Cart Types
+// ==========================================
 export interface CartItem extends Product {
   quantity: number;
 }
@@ -30,7 +36,7 @@ export interface CartState {
   cart: CartItem[];
   lastSearch: { email: string; phone: string } | null;
   appliedCoupon: AppliedCoupon | null;
-  isDarkMode: boolean;
+  isDarkMode: boolean; 
   toggleTheme: () => void;
   addToCart: (product: Product) => void;
   removeFromCart: (productId: string) => void;
@@ -40,6 +46,19 @@ export interface CartState {
   applyCoupon: (coupon: AppliedCoupon | null) => void;
   getTotalPrice: () => number;
   setLastSearch: (email: string, phone: string) => void;
+}
+
+// ==========================================
+// 3. API & Pagination Types
+// ==========================================
+export interface PaginatedResponse<T> {
+  data: T[];
+  page: number;
+  perPage: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
 }
 
 export interface GetProductsParams {
@@ -60,16 +79,9 @@ export interface GetShopParams {
   sortOrder?: 'asc' | 'desc';
 }
 
-export interface PaginatedResponse<T> {
-  data: T[];
-  page: number;
-  perPage: number;
-  totalItems: number;
-  totalPages: number;
-  hasNextPage?: boolean;
-  hasPreviousPage?: boolean;
-}
-
+// ==========================================
+// 4. Order & Coupon Types
+// ==========================================
 export interface OrderItem {
   product: string;
   name: string;
@@ -105,28 +117,8 @@ export interface Coupon {
   isActive: boolean;
   expiresAt: string;
 }
+
 export interface AppliedCoupon {
   code: string;
   discount: number;
-}
-export interface ProductListProps {
-  products: Product[];
-  onAddToCart: (product: Product) => void;
-  selectedCategories: string[];
-  onCategoryChange: (categories: string[]) => void;
-  onSortChange: (value: string) => void;
-}
-
-export interface ProductSectionProps {
-  isLoading: boolean;
-  products: Product[];
-  hasMore: boolean;
-  selectedShopId: string | null;
-  selectedCategories: string[];
-  isDarkMode: boolean;
-  isMobile: boolean;
-  onAddToCart: (product: Product) => void;
-  onCategoryChange: (categories: string[]) => void;
-  onSortChange: (value: string) => void;
-  onLoadMore: () => void;
 }

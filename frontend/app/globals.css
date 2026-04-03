@@ -1,3 +1,27 @@
+:root {
+  --app-bg: #f5f5f5;
+  --card-bg: #ffffff;
+  --text-main: rgba(0, 0, 0, 0.88);
+  --border-color: #d9d9d9;
+  --container-width: 1280px;
+
+  --colorPrimary: #13c2c2;
+  --warning-bg: #fff7e6;
+  --warning-border: #ffa940;
+  --warning-text: #d46b08;
+}
+
+html[data-theme='dark'] {
+  --app-bg: #141414;
+  --card-bg: #1d1d1d;
+  --text-main: rgba(255, 255, 255, 0.85);
+  --border-color: #303030;
+
+  --warning-bg: #261a02;
+  --warning-border: #ffd666;
+  --warning-text: #d46b08;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -8,53 +32,91 @@ body {
   padding: 0 !important;
   width: 100%;
   min-height: 100vh;
+  background-color: var(--app-bg) !important;
+  color: var(--text-main);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-:root {
-  background-color: #ffffff;
-  color: rgba(0, 0, 0, 0.88);
-}
-
-html[data-theme='dark'],
-html[data-theme='dark'] body,
-html[data-theme='dark'] .ant-layout {
-  background-color: #000000 !important;
-  color: rgba(255, 255, 255, 0.85) !important;
-}
-
-html[data-theme='dark'] .ant-card,
-html[data-theme='dark'] .ant-card-body,
-html[data-theme='dark'] .ant-list-item,
-html[data-theme='dark'] .ant-collapse-header,
-html[data-theme='dark'] .ant-collapse-content,
-html[data-theme='dark'] .ant-tabs-nav,
-html[data-theme='dark'] .ant-tabs-content-holder,
-html[data-theme='dark'] .ant-input,
-html[data-theme='dark'] .ant-select-selector,
-html[data-theme='dark'] .ant-layout-sider,
-html[data-theme='dark'] .ant-menu {
-  background-color: #141414 !important;
-  color: #ffffff !important;
-  border-color: #303030 !important;
-}
-
-html[data-theme='dark'] .ant-card-meta-title,
-html[data-theme='dark'] .ant-card-meta-description {
-  color: rgba(255, 255, 255, 0.85) !important;
-}
-
-html[data-theme='dark'] .ant-btn-default {
-  background-color: transparent !important;
-  color: #ffffff !important;
-  border-color: #434343 !important;
-}
-
 .container {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 30px;
   width: 100%;
+  margin-inline: auto;
+  padding-inline: 20px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 767.98px) {
+  .container {
+    max-width: 425px;
+    padding-inline: 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+    padding-inline: 32px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1440px;
+    padding-inline: 64px;
+  }
+}
+
+html[data-theme='dark'] .ant-card {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+}
+
+html[data-theme='dark'] .ant-input,
+html[data-theme='dark'] .ant-input-affix-wrapper {
+  background-color: #141414 !important;
+  border-color: var(--border-color) !important;
+  color: #ffffff !important;
+}
+
+.app-card-interactive {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+}
+
+.app-card-interactive:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+  border-color: var(--colorPrimary) !important;
+}
+
+.app-card-interactive.active {
+  border: 2px solid var(--colorPrimary) !important;
+  background-color: var(--card-bg) !important;
+  box-shadow: 0 4px 12px rgba(19, 194, 194, 0.2) !important;
+  transform: scale(1.02);
+}
+
+.shop-card-item {
+  transition: all 0.3s ease !important;
+}
+
+.shop-card-item:not(.active):hover {
+  border-color: var(--warning-border) !important;
+  background-color: var(--card-bg) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+html[data-theme='dark'] .shop-card-item:not(.active):hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  background-color: #262626 !important;
+}
+
+.ant-btn {
+  transition: all 0.2s ease !important;
+}
+
+.ant-btn:active {
+  transform: scale(0.96);
 }
 
 ::-webkit-scrollbar {
@@ -66,6 +128,6 @@ html[data-theme='dark'] .ant-btn-default {
   border-radius: 10px;
 }
 
-.dark ::-webkit-scrollbar-thumb {
+html[data-theme='dark'] ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
 }

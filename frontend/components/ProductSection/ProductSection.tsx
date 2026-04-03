@@ -1,10 +1,25 @@
 "use client";
 
-import { useEffect } from "react";
-import { Flex, Spin, Empty, theme } from "antd";
+import { useEffect, useState } from "react";
+import { Flex, Spin, Empty, theme, Button, Grid } from "antd";
+import { ArrowUpOutlined } from "@ant-design/icons";
 import { useInView } from "react-intersection-observer";
 import ProductList from "@/components/ProductList/ProductList";
-import { ProductSectionProps } from "@/types";
+import { Product } from "@/types";
+
+const { useBreakpoint } = Grid;
+
+interface ProductSectionProps {
+  isLoading: boolean;
+  products: Product[];
+  hasMore: boolean;
+  selectedShopId: string | null;
+  selectedCategories: string[];
+  onAddToCart: (product: Product) => void;
+  onCategoryChange: (categories: string[]) => void;
+  onSortChange: (value: string) => void;
+  onLoadMore: () => void;
+}
 
 export default function ProductSection({
   isLoading,
@@ -12,14 +27,19 @@ export default function ProductSection({
   hasMore,
   selectedShopId,
   selectedCategories,
-  isDarkMode,
-  isMobile,
   onAddToCart,
   onCategoryChange,
   onSortChange,
   onLoadMore,
 }: ProductSectionProps) {
   const { token } = theme.useToken();
+  const screens = useBreakpoint();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const { ref, inView } = useInView({ threshold: 0.1 });
 
   useEffect(() => {
@@ -28,24 +48,58 @@ export default function ProductSection({
     }
   }, [inView, hasMore, isLoading, onLoadMore]);
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+const isDesktop = screens.xl;
+
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100%", // Дозволяє розтягуватися під висоту Row (align="stretch")
+        height: "100%",
         minHeight: "700px",
-        border: isMobile ? "none" : `1px solid ${isDarkMode ? "#303030" : "#d9d9d9"}`,
+        border: isDesktop ? `1px solid ${token.colorBorderSecondary}` : "none",
         borderRadius: "12px",
         background: token.colorBgContainer,
         transition: "all 0.3s ease",
-        overflow: "visible", // ВАЖЛИВО: вимикаємо внутрішній скрол блоку
+        position: "relative",
       }}
     >
+      {!isDesktop && (
+        <div
+          style={{
+            padding: "10px 20px",
+            position: "sticky",
+            top: "64px",
+            zIndex: 110,
+            background: token.colorBgContainer,
+            borderBottom: `1px solid ${token.colorBorderSecondary}`,
+          }}
+        >
+          <Button
+            icon={<ArrowUpOutlined />}
+            onClick={scrollToTop}
+            block
+            type="primary"
+            ghost
+            style={{
+              height: "40px",
+              borderRadius: "8px",
+              fontWeight: "600",
+            }}
+          >
+            Back to Shops
+          </Button>
+        </div>
+      )}
+
       <div
         style={{
           flex: 1,
-          padding: "0 20px 20px 20px",
+          padding: !isDesktop ? "0 10px 20px 10px" : "0 20px 20px 20px",
           position: "relative",
         }}
       >

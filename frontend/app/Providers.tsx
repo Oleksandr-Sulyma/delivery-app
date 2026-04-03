@@ -14,12 +14,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-  if (isDarkMode) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-  }
-}, [isDarkMode]);
+    if (!mounted) return;
+    if (isDarkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }, [isDarkMode, mounted]);
 
   if (!mounted) {
     return <div style={{ visibility: 'hidden' }}>{children}</div>;
@@ -30,8 +31,25 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       theme={{
         algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: {
-          colorPrimary: '#ff4d4f',
+          colorPrimary: '#13c2c2',
           borderRadius: 8,
+          controlHeight: 40,
+        },
+        components: {
+          Button: {
+            fontWeight: 600,
+            borderRadius: 8,
+            controlHeight: 40,
+          },
+          Card: {
+            borderRadiusLG: 12,
+          },
+          Select: {
+            controlHeight: 40,
+          },
+          Checkbox: {
+            colorPrimary: '#13c2c2',
+          },
         },
       }}
     >

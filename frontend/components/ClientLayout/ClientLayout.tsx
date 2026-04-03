@@ -2,7 +2,6 @@
 
 import { Layout, theme } from "antd";
 import AppHeader from "../AppHeader/AppHeader";
-import { useCartStore } from "@/store/useCartStore";
 
 const { Content } = Layout;
 
@@ -11,16 +10,14 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isDarkMode = useCartStore((state) => state.isDarkMode);
-  const { token } = theme.useToken(); 
+  const { token } = theme.useToken();
 
   return (
-    <Layout 
-      style={{ 
-        minHeight: "100vh", 
-      
+    <Layout
+      style={{
+        minHeight: "100vh",
         background: token.colorBgLayout,
-        transition: "background-color 0.3s ease" 
+        transition: "background-color 0.3s ease"
       }}
     >
       <AppHeader />

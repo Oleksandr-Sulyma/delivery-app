@@ -13,21 +13,31 @@ import type {
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api',
+  paramsSerializer: (p) => qs.stringify(p, { arrayFormat: 'repeat', skipNulls: true })
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const message = error.response?.data?.message || error.message || 'API Error';
+
+    if (!(error.config.url?.includes('/orders/history') && error.response?.status === 404)) {
+       console.error('[API]:', message);
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export const productsService = {
   getAllProducts: async (params: GetProductsParams): Promise<PaginatedResponse<Product>> => {
-     const filteredParams = {
-      ...params,
-      category: params.category?.length ? params.category : undefined,
-      ids: params.ids?.length ? params.ids : undefined,
-    };
-
     const { data } = await api.get<PaginatedResponse<Product>>('/products', {
-      params: filteredParams,
-      paramsSerializer: p => qs.stringify(p, { arrayFormat: 'repeat' })
+      params: {
+        ...params,
+        category: params.category?.length ? params.category : undefined,
+        ids: params.ids?.length ? params.ids : undefined,
+      }
     });
-
     return data;
   },
 
@@ -39,44 +49,44 @@ export const productsService = {
 
 export const shopsService = {
   getAllShops: async (params?: GetShopParams): Promise<PaginatedResponse<Shop>> => {
-     const response = await api.get<PaginatedResponse<Shop>>('/shops', {
-        params: {
-          sortBy: 'rating',
-          sortOrder: 'desc',
-          ...params
-        }
-      });
-      return response.data;
-}
+    const { data } = await api.get<PaginatedResponse<Shop>>('/shops', {
+      params: {
+        sortBy: 'rating',
+        sortOrder: 'desc',
+        ...params
+      }
+    });
+    return data;
+  }
 };
 
 export const orderService = {
   createOrder: async (orderData: OrderCreateData): Promise<OrderResponse> => {
-    const { data } = await api.post('/orders', orderData);
+    const { data } = await api.post<OrderResponse>('/orders', orderData);
     return data;
   },
 
   getOrderHistory: async (email: string, phone: string): Promise<OrderResponse[]> => {
-    const { data } = await api.get('/orders/history', {
+    const { data } = await api.get<OrderResponse[]>('/orders/history', {
       params: { email, phone }
     });
     return data;
   },
 
   getOrderById: async (orderId: string): Promise<OrderResponse> => {
-    const { data } = await api.get(`/orders/${orderId}`);
+    const { data } = await api.get<OrderResponse>(`/orders/${orderId}`);
     return data;
   }
 };
 
 export const couponService = {
   getAll: async (): Promise<Coupon[]> => {
-    const { data } = await api.get('/coupons');
+    const { data } = await api.get<Coupon[]>('/coupons');
     return data;
   },
 
   validate: async (code: string): Promise<{ name: string; discount: number }> => {
-    const { data } = await api.get(`/coupons/validate/${code}`);
+    const { data } = await api.get<{ name: string; discount: number }>(`/coupons/validate/${code}`);
     return data;
   }
 };
