@@ -4,7 +4,7 @@ export interface Shop {
   _id: string;
   name: string;
   address: string;
-  imageUrl: string;
+  imageUrl?: string;
   rating: number;
   createdAt?: string;
   updatedAt?: string;
@@ -14,7 +14,7 @@ export interface Product {
   _id: string;
   name: string;
   price: number;
-  imageUrl: string;
+  imageUrl?: string;
   category: Category;
   shop: string;
   isAvailable: boolean;
@@ -44,10 +44,18 @@ export interface CartState {
 
 export interface GetProductsParams {
   shopId?: string;
-  category?: string;
-  ids?: string;
+  category?: string[];
+  ids?: string[];
   page?: number;
   perPage?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface GetShopParams {
+  name?: string;
+  minRating?: number;
+  maxRating?: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
@@ -58,8 +66,8 @@ export interface PaginatedResponse<T> {
   perPage: number;
   totalItems: number;
   totalPages: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
 }
 
 export interface OrderItem {
@@ -101,11 +109,24 @@ export interface AppliedCoupon {
   code: string;
   discount: number;
 }
-
-interface ProductListProps {
+export interface ProductListProps {
   products: Product[];
   onAddToCart: (product: Product) => void;
   selectedCategories: string[];
   onCategoryChange: (categories: string[]) => void;
   onSortChange: (value: string) => void;
+}
+
+export interface ProductSectionProps {
+  isLoading: boolean;
+  products: Product[];
+  hasMore: boolean;
+  selectedShopId: string | null;
+  selectedCategories: string[];
+  isDarkMode: boolean;
+  isMobile: boolean;
+  onAddToCart: (product: Product) => void;
+  onCategoryChange: (categories: string[]) => void;
+  onSortChange: (value: string) => void;
+  onLoadMore: () => void;
 }

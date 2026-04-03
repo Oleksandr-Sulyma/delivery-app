@@ -1,9 +1,11 @@
 import axios from 'axios';
-import type { 
-  Product, 
-  Shop, 
-  GetProductsParams, 
-  PaginatedResponse, 
+import qs from 'qs';
+import type {
+  Product,
+  Shop,
+  GetProductsParams,
+  GetShopParams,
+  PaginatedResponse,
   OrderCreateData,
   OrderResponse,
   Coupon
@@ -15,13 +17,17 @@ export const api = axios.create({
 
 export const productsService = {
   getAllProducts: async (params: GetProductsParams): Promise<PaginatedResponse<Product>> => {
-    const { data } = await api.get<PaginatedResponse<Product>>('/products', { 
-      params: {
-        sortBy: 'createdAt',
-        sortOrder: 'desc',
-        ...params 
-      } 
+     const filteredParams = {
+      ...params,
+      category: params.category?.length ? params.category : undefined,
+      ids: params.ids?.length ? params.ids : undefined,
+    };
+
+    const { data } = await api.get<PaginatedResponse<Product>>('/products', {
+      params: filteredParams,
+      paramsSerializer: p => qs.stringify(p, { arrayFormat: 'repeat' })
     });
+
     return data;
   },
 
@@ -32,28 +38,16 @@ export const productsService = {
 };
 
 export const shopsService = {
-  getAllShops: async (params?: { 
-    name?: string; 
-    minRating?: number; 
-    maxRating?: number;
-    sortBy?: string;
-    sortOrder?: string;
-  }): Promise<Shop[]> => {
-    try {
-      const response = await api.get<any>('/shops', {
+  getAllShops: async (params?: GetShopParams): Promise<PaginatedResponse<Shop>> => {
+     const response = await api.get<PaginatedResponse<Shop>>('/shops', {
         params: {
           sortBy: 'rating',
           sortOrder: 'desc',
           ...params
         }
       });
-
-      return Array.isArray(response.data) ? response.data : response.data.data || [];
-    } catch (error) {
-      console.error("Error fetching shops:", error);
-      return [];
-    }
-  },
+      return response.data;
+}
 };
 
 export const orderService = {
@@ -80,7 +74,7 @@ export const couponService = {
     const { data } = await api.get('/coupons');
     return data;
   },
-  
+
   validate: async (code: string): Promise<{ name: string; discount: number }> => {
     const { data } = await api.get(`/coupons/validate/${code}`);
     return data;

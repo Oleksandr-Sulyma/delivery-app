@@ -25,7 +25,7 @@ export default function HistoryClient() {
     setLoading(true);
     try {
       let data: OrderResponse[] = [];
-      
+
       if (searchMode === 'contacts') {
         const cleanPhone = `+380${values.phone.replace(/\D/g, "")}`;
         data = await orderService.getOrderHistory(values.email, cleanPhone);
@@ -56,7 +56,7 @@ export default function HistoryClient() {
   const processReorder = async (historyItems: any[]) => {
     try {
       const ids = historyItems.map((item) => item.product);
-      const response = await productsService.getAllProducts({ ids: ids.join(","), perPage: 100 });
+      const response = await productsService.getAllProducts({ ids, perPage: 100 });
       const freshProducts = response.data;
       const itemsToAdd = freshProducts
         .filter((p: Product) => p.isAvailable)
@@ -79,7 +79,7 @@ export default function HistoryClient() {
     setReorderLoading(orderId);
     try {
       const ids = historyItems.map((item) => item.product);
-      const response = await productsService.getAllProducts({ ids: ids.join(","), perPage: 1 });
+      const response = await productsService.getAllProducts({ ids, perPage: 1 });
       const newShopId = response.data[0]?.shop;
       if (cart.length > 0 && cart[0].shop !== newShopId) {
         confirm({
@@ -105,20 +105,20 @@ export default function HistoryClient() {
   };
 
   return (
-    <main style={{ padding: "40px", maxWidth: "900px", margin: "0 auto" }}>
+    <main style={{ padding: "0px 40px 40px", maxWidth: "900px", margin: "0 auto" }}>
       <Flex vertical gap="large" style={{ width: "100%" }}>
         <Title level={2}><HistoryOutlined /> Order History</Title>
 
         <Card style={{ borderRadius: "12px", background: "#fafafa" }}>
-          <Tabs 
-            activeKey={searchMode} 
+          <Tabs
+            activeKey={searchMode}
             onChange={(key: any) => setSearchMode(key)}
             items={[
               { key: 'contacts', label: 'Email & Phone' },
               { key: 'id', label: 'Order ID' },
             ]}
           />
-          
+
           <Form form={form} layout="vertical" onFinish={onSearch} style={{ marginTop: '10px' }}>
             <Row gutter={[16, 0]} align="bottom">
               {searchMode === 'contacts' ? (
@@ -156,7 +156,7 @@ export default function HistoryClient() {
                   </Form.Item>
                 </Col>
               )}
-              
+
               <Col xs={24} md={6}>
 
                 <Form.Item style={{ marginBottom: '24px' }}>

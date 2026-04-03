@@ -1,8 +1,9 @@
 import React from "react";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { Toaster } from "react-hot-toast";
+import { App } from "antd";
 import type { Metadata } from 'next';
-import Providers from "./Providers"; 
+import Providers from "./Providers";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     'food delivery', 'order food online', 'delivery app', 'burgers', 'pizza delivery',
   ],
   icons: {
-    icon: '/favicon.ico', 
+    icon: '/favicon.ico',
     shortcut: '/favicon-32x32.png',
     apple: '/apple-touch-icon.png',
   },
@@ -51,15 +52,17 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AntdRegistry>
-          <Toaster 
-            position="top-center" 
+          <Toaster
+            position="top-center"
             toastOptions={{
               duration: 3000,
               style: { borderRadius: '10px', background: '#333', color: '#fff' },
             }}
           />
           <Providers>
-            {children}
+            <App>
+              {children}
+            </App>
           </Providers>
         </AntdRegistry>
       </body>

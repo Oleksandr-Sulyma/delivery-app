@@ -17,20 +17,14 @@ export const getAllProducts = async (req, res, next) => {
     const filter = {};
     if (shopId) filter.shop = shopId;
 
-    if (category) {
-      const categoryArray = Array.isArray(category)
-        ? category
-        : category.split(',').filter(Boolean);
-
-      if (categoryArray.length > 0) {
-        filter.category = { $in: categoryArray };
+    if (category && category.length > 0) {
+        filter.category = { $in: category };
       }
-    }
 
     if (isAvailable !== undefined) filter.isAvailable = isAvailable === 'true';
 
-    if (ids) {
-      const idsArray = ids.split(',').filter(Boolean);
+    if (ids && ids.length > 0) {
+      const idsArray = ids.filter(Boolean);
       filter._id = { $in: idsArray };
     }
 
