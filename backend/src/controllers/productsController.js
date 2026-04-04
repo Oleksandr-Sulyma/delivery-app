@@ -11,15 +11,15 @@ export const getAllProducts = async (req, res, next) => {
       page = 1,
       perPage = 12,
       sortBy = 'createdAt',
-      sortOrder = 'asc'
+      sortOrder = 'asc',
     } = req.query;
 
     const filter = {};
     if (shopId) filter.shop = shopId;
 
     if (category && category.length > 0) {
-        filter.category = { $in: category };
-      }
+      filter.category = { $in: category };
+    }
 
     if (isAvailable !== undefined) filter.isAvailable = isAvailable === 'true';
 
@@ -32,12 +32,19 @@ export const getAllProducts = async (req, res, next) => {
     const limitNum = Math.max(1, Number(perPage));
     const skip = (pageNum - 1) * limitNum;
 
+    const sortOptions = { isAvailable: -1 };
+
+    if (sortBy === 'category' || sortBy === 'createdAt') {
+      sortOptions.category = 1;
+      sortOptions.name = 1;
+    } else {
+      sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+      sortOptions.name = 1;
+    }
+
     const [totalItems, products] = await Promise.all([
       Product.countDocuments(filter),
-      Product.find(filter)
-        .sort({ isAvailable: -1, [sortBy]: sortOrder === 'asc' ? 1 : -1 })
-        .skip(skip)
-        .limit(limitNum)
+      Product.find(filter).sort(sortOptions).skip(skip).limit(limitNum),
     ]);
 
     res.status(200).json({
@@ -47,7 +54,7 @@ export const getAllProducts = async (req, res, next) => {
       totalItems,
       totalPages: Math.ceil(totalItems / limitNum),
       hasNextPage: pageNum * limitNum < totalItems,
-      hasPreviousPage: pageNum > 1
+      hasPreviousPage: pageNum > 1,
     });
   } catch (error) {
     next(error);

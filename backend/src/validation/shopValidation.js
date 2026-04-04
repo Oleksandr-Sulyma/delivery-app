@@ -4,7 +4,7 @@ import objectIdValidator from '../middleware/objectIdValidator.js';
 export const getAllShopsSchema = {
   [Segments.QUERY]: Joi.object({
     page: Joi.number().integer().min(1).default(1),
-    perPage: Joi.number().integer().min(1).max(100).default(10),
+    perPage: Joi.number().integer().min(1).max(100).default(12),
     name: Joi.string().min(1).optional(),
     minRating: Joi.number().min(1).max(5).optional(),
     maxRating: Joi.number().min(1).max(5).optional(),
@@ -26,7 +26,7 @@ export const getShopProductsSchema = {
   [Segments.QUERY]: Joi.object({
     category: Joi.string().valid('Burgers', 'Pizzas', 'Drinks', 'Sushi', 'Desserts').optional(),
     page: Joi.number().integer().min(1).default(1),
-    perPage: Joi.number().integer().min(1).max(100).default(8),
+    perPage: Joi.number().integer().min(1).max(100).default(12),
     sortBy: Joi.string().valid('price', 'name', 'createdAt').default('createdAt'),
     sortOrder: Joi.string().valid('asc', 'desc').default('asc'),
   }),

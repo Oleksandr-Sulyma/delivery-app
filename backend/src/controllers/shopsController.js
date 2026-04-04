@@ -67,7 +67,7 @@ export const getProductsByShop = async (req, res, next) => {
     const {
       category,
       page = 1,
-      perPage = 8,
+      perPage = 12,
       sortBy = 'createdAt',
       sortOrder = 'asc'
     } = req.query;

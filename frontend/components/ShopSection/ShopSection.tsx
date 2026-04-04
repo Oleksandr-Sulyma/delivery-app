@@ -28,7 +28,7 @@ export default function ShopSection({
     <div
       style={{
         position: isDesktop ? "sticky" : "static",
-        top: "84px",
+        top: "64px",
         display: "flex",
         flexDirection: "column",
         height: isDesktop ? "calc(100vh - 124px)" : "auto",

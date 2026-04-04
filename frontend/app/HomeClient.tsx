@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Row, Col, theme, App, Spin, Flex, Grid } from 'antd';
+import { Row, Col, theme, Typography, App, Spin, Flex, Grid } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import toast from 'react-hot-toast';
 import { shopsService, productsService } from '@/services/api';
@@ -11,6 +11,7 @@ import ShopSection from '@/components/ShopSection/ShopSection';
 import ProductSection from '@/components/ProductSection/ProductSection';
 
 const { useBreakpoint } = Grid;
+const { Text, Title } = Typography;
 
 export default function HomeClient() {
   const { modal } = App.useApp();
@@ -35,7 +36,7 @@ export default function HomeClient() {
   });
 
   const productsRef = useRef<HTMLDivElement>(null);
-  const isDesktop = screens.xl; // 1440px+
+  const isDesktop = screens.xl;
 
   useEffect(() => {
     const fetchShops = async () => {
@@ -170,6 +171,35 @@ export default function HomeClient() {
 
   return (
     <main style={{ minHeight: '100vh', padding: '20px 0' }}>
+         {/* Заголовок H1 (Hero block) */}
+        <div style={{
+          marginBottom: isDesktop ? '32px' : '24px',
+          padding: '0 10px',
+          textAlign: isDesktop ? 'left' : 'center'
+        }}>
+          <Title
+            level={1}
+            style={{
+              margin: 0,
+              fontSize: isDesktop ? '38px' : '28px',
+              fontWeight: 850,
+              letterSpacing: '-1px',
+              color: token.colorText
+            }}
+          >
+            Your Favorite Food, Delivered Fast 🚀
+          </Title>
+          <Text
+            style={{
+              fontSize: isDesktop ? '18px' : '16px',
+              color: token.colorTextSecondary,
+              display: 'block',
+              marginTop: '8px'
+            }}
+          >
+            Choose a shop and order the best local dishes directly to your door.
+          </Text>
+        </div>
       <div className="container">
         {isDesktop ? (
           <Row gutter={[24, 24]} align="stretch">
@@ -222,3 +252,5 @@ export default function HomeClient() {
     </main>
   );
 }
+
+

@@ -14,7 +14,7 @@ export const ProductsParamSchema = {
     page: Joi.number().integer().min(1).default(1),
     perPage: Joi.number().integer().min(1).max(100).default(12),
     sortBy: Joi.string()
-      .valid('price', 'name', 'rating', 'createdAt')
+      .valid('price', 'name', 'category', 'createdAt')
       .default('createdAt'),
     sortOrder: Joi.string().valid('asc', 'desc').default('asc'),
   }).or('shopId', 'ids'),
